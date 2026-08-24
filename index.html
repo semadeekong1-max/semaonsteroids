@@ -1202,8 +1202,7 @@
         '.photo-grid',
         '.skills',
         '.tools-list',
-        '.contact .buttons',
-        'footer'
+        '.contact .buttons'
       ];
 
       // Individual elements that reveal as a single unit.
@@ -1262,6 +1261,32 @@
       targets.forEach(function (el) {
         observer.observe(el);
       });
+
+      // The footer sits at the very bottom of the page with nothing
+      // below it to scroll past, so it needs its own observer without
+      // the bottom-edge shrink above — otherwise it can never reach
+      // the intersection threshold and stays invisible.
+      var footer = document.querySelector('footer');
+      if (footer) {
+        var footerItems = Array.prototype.slice.call(footer.children);
+        footerItems.forEach(function (el, i) {
+          el.classList.add('reveal');
+          el.style.setProperty('--reveal-delay', (i * STEP) + 's');
+        });
+
+        var footerObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            entry.target.classList.toggle('is-visible', entry.isIntersecting);
+          });
+        }, {
+          threshold: 0.01,
+          rootMargin: '0px'
+        });
+
+        footerItems.forEach(function (el) {
+          footerObserver.observe(el);
+        });
+      }
     })();
   </script>
 
